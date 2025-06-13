@@ -1,11 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { ModeToggle } from "../theme/mode-toggle"
 import { cn } from "@/lib/utils"
 import { Button } from "../ui/button"
 import { useSession } from "@/lib/auth-client"
 import UserMenu from "../auth/user-menu"
+import ThemeToggle from "../theme/theme-toggle"
 
 export default function Header() {
 
@@ -40,8 +40,8 @@ export default function Header() {
           <div className="hidden md:block">
             {/* Placeholer for search */}
           </div>
+          <ThemeToggle />
           <div className="flex items-center gap-2">
-            <ModeToggle />
             {
               isPending ? null :
                 session?.user ?
