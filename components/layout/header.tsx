@@ -4,8 +4,12 @@ import Link from "next/link"
 import { ModeToggle } from "../theme/mode-toggle"
 import { cn } from "@/lib/utils"
 import { Button } from "../ui/button"
+import { useSession } from "@/lib/auth-client"
+import UserMenu from "../auth/user-menu"
 
 export default function Header() {
+
+  const { data: session, isPending } = useSession()
 
   const navItems = [
     {
@@ -25,7 +29,7 @@ export default function Header() {
           <Link href={'/'} className="font-bold text-xl">BlogMMTQ</Link>
           <nav className="hidden md:flex items-center gap-6">
             {
-              navItems.map(item=>(
+              navItems.map(item => (
                 <Link key={item.href} href={item.href} className={cn("text-sm font-medium transition-colors hover:text-primary")} >{item.label}
                 </Link>
               ))
@@ -37,10 +41,15 @@ export default function Header() {
             {/* Placeholer for search */}
           </div>
           <div className="flex items-center gap-2">
-            <ModeToggle/>
-            <Button asChild variant={'outline'} className="cursor-pointer">
-              <Link href={'/auth'}>Login</Link>
-            </Button>
+            <ModeToggle />
+            {
+              isPending ? null :
+                session?.user ?
+                  <UserMenu user={session?.user} /> :
+                  <Button asChild variant={'outline'} className="cursor-pointer">
+                    <Link href={'/auth'}>Login</Link>
+                  </Button>
+            }
           </div>
         </div>
       </div>

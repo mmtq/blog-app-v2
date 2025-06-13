@@ -37,7 +37,7 @@ export default function LoginForm() {
                 rememberMe: true
             })
             if(error){
-                toast('Failed to login. Please try again')
+                toast(error.message)
                 return
             }
             toast('Logged in successfully.')
