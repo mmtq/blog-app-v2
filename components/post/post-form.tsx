@@ -1,6 +1,5 @@
 'use client';
 
-import { title } from "process";
 import { z } from "zod";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -9,6 +8,9 @@ import { Button } from "../ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTransition } from "react";
+import { createPost } from "@/actions/post-actions";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 //post form schema
 
@@ -20,7 +22,9 @@ const postSchema = z.object({
 
 type PostFormValues = z.infer<typeof postSchema>
 
-export default function PostForm() {
+export default function PostForm() {    
+
+    const router = useRouter()
 
     const [isPending, startTransition] = useTransition();
 
@@ -34,7 +38,29 @@ export default function PostForm() {
     })
 
     const onFormSubmit = (data: PostFormValues) => {
-        console.log(data);
+        startTransition(async () => {
+            try {
+                const formData = new FormData();
+                formData.append('title', data.title);
+                formData.append('description', data.description);
+                formData.append('content', data.content);
+
+                const response = await createPost(formData);
+                console.log(response);
+
+                if(response.success){
+                    toast.success(response.message)
+                    router.push('/')
+                }
+                else{
+                    toast.error(response.message)
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+
+        })
     }
 
   return (
