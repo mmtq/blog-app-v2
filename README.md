@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📰 Full Blog Platform
 
-## Getting Started
+A complete, modern blog platform built with **Next.js**, **Drizzle ORM**, and **PostgreSQL**, featuring powerful authentication, dynamic routing, full admin control, and full-text search.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🔐 Authentication System
+- Full auth system using **JWT** with a custom **Drizzle adapter**
+- Secure **register**, **login**, **logout**, and **token refresh**
+- **Route protection** with Next.js Middleware
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🧠 Global State & Theme
+- **Zustand** for global state management
+- **Light/Dark theme toggle** using `next-themes` + TailwindCSS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 📝 Forms & Validation
+- **React Hook Form** + **Zod** for robust forms
+- Seamless UX with:
+  - `useFormState` & `useFormStatus` (Server Actions)
+  - Optimistic UI updates
+  - Auto-generated slugs
 
-## Learn More
+### 🛠️ CRUD Operations with Drizzle + ISR
+- **Create**, **edit**, and **delete** blog posts
+- Built with `generateStaticParams()` and **Incremental Static Regeneration (ISR)**
+- Admin approval system for publishing content
 
-To learn more about Next.js, take a look at the following resources:
+### 🔍 Full-Text Search
+- Advanced search using **PostgreSQL ILIKE** or `tsvector`
+- **Debounced search input** for performance
+- UI feedback for no-results scenarios
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🧭 Routing & Layout
+- **Dynamic routes**: `/post/[slug]`
+- Custom **404 page**
+- Fully featured **header** and **dashboard layout**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🧰 Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Next.js**
+- **PostgreSQL**
+- **Drizzle ORM**
+- **TailwindCSS**
+- **Zustand**
+- **React Hook Form**
+- **Zod**
+- **next-themes**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🚀 Getting Started
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/full-blog-platform.git
+   cd full-blog-platform]
+2. **Clone the repository**
+   ```bash
+   pnpm install
+3. **Set up your `.env` file**
+2. **Run the development server**
+   ```bash
+   pnpm dev
