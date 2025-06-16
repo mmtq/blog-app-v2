@@ -1,3 +1,4 @@
+import PostList from "@/components/post/post-list";
 import { getAllPosts } from "@/lib/db/queries";
 import { Metadata } from "next";
 
@@ -9,7 +10,6 @@ export const metadata: Metadata = {
 export default async function Home() {
 
   const posts = await getAllPosts();
-  console.log(posts);
 
   return (
     <main className="py-10">
@@ -18,12 +18,7 @@ export default async function Home() {
         {
           posts?.length > 0 ? (
             <div className="mt-4">
-              {posts.map(post => (
-                <div key={post.id} className="mb-4">
-                  <h2 className="text-lg font-semibold">{post.title}</h2>
-                  <p className="text-muted-foreground">{post.content}</p>
-                </div>
-              ))}
+              <PostList posts={posts} />
             </div>
           ) : (
             <div className="text-center py-10">
