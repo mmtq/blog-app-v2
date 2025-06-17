@@ -90,7 +90,7 @@ export async function updatePost(postID: number, formData: FormData) {
         }
 
         const existingPost = await db.query.posts.findFirst({
-            where : eq(posts.id, postID)
+            where: eq(posts.id, postID)
         })
 
         if (existingPost?.authorId !== session.user.id) {
@@ -129,7 +129,7 @@ export async function updatePost(postID: number, formData: FormData) {
         return {
             success: true,
             message: 'Post updated successfully',
-            slug : existingPost.slug
+            slug: existingPost.slug
         }
 
     } catch (error) {
@@ -138,5 +138,45 @@ export async function updatePost(postID: number, formData: FormData) {
             success: false,
             message: 'Failed to update post. Please try again.'
         }
+    }
+}
+
+export async function deletePost(postID: number) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
+
+        if (!session || !session.user) {
+            return {
+                success: false,
+                message: 'You are not logged in'
+            }
+        }
+
+        const existingPost = await db.query.posts.findFirst({
+            where: eq(posts.id, postID)
+        })
+
+        if (existingPost?.authorId !== session.user.id) {
+            return {
+                success: false,
+                message: 'You are not authorized to delete this post'
+            }
+        }
+
+        const [deletedPost] = await db.delete(posts).where(eq(posts.id, postID)).returning()
+
+        // revalidate pages
+        revalidatePath('/')
+        revalidatePath('/profile')
+
+        return {
+            success: true,
+            message: 'Post deleted successfully',
+        }
+
+    } catch (error) {
+
     }
 }
