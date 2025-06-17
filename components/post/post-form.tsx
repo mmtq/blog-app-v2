@@ -8,9 +8,10 @@ import { Button } from "../ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTransition } from "react";
-import { createPost } from "@/actions/post-actions";
+import { createPost, updatePost } from "@/actions/post-actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { EditPostProps, PostType } from "@/lib/types";
 
 //post form schema
 
@@ -22,18 +23,18 @@ const postSchema = z.object({
 
 type PostFormValues = z.infer<typeof postSchema>
 
-export default function PostForm() {    
+export default function PostForm({ isEditing, post }: EditPostProps) {
 
     const router = useRouter()
 
     const [isPending, startTransition] = useTransition();
 
-    const {register, handleSubmit, formState : {errors}} = useForm<PostFormValues>({
+    const { register, handleSubmit, formState: { errors } } = useForm<PostFormValues>({
         resolver: zodResolver(postSchema),
         defaultValues: {
-            title: '',
-            description: '',
-            content: ''
+            title: post?.title ?? '',
+            description: post?.description ?? '',
+            content: post?.content ?? ''
         }
     })
 
@@ -45,52 +46,57 @@ export default function PostForm() {
                 formData.append('description', data.description);
                 formData.append('content', data.content);
 
-                const response = await createPost(formData);
+                let response
+
+                if (isEditing && post) {
+                    response = await updatePost(post.id, formData)
+                } else {
+                    response = await createPost(formData);
+                }
+
                 console.log(response);
 
-                if(response.success){
+                if (response.success) {
                     toast.success(response.message)
-                    router.push('/')
+                    router.push('/post/' + response.slug)
                 }
-                else{
+                else {
                     toast.error(response.message)
                 }
-
             } catch (error) {
                 console.error(error);
             }
-
         })
     }
-
-  return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
-        <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" placeholder="Enter a title" {...register('title')} disabled={isPending}/>
-            {
-                errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>
-            }
-        </div>
-        <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Input id="description" placeholder="Add a description" {...register('description')} disabled={isPending} />
-            {
-                errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>
-            }
-        </div>
-        <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <Textarea id="content" placeholder="Add your content" {...register('content')} disabled={isPending} />
-            {
-                errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>
-            }
-        </div>
-        <Button className="w-full" type="submit" disabled={isPending}>
-            {
-                isPending ? 'Creating Post...' : 'Create Post'
-            }
-        </Button>
-    </form>
-  )
+    return (
+        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+            <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input id="title" placeholder="Enter a title" {...register('title')} disabled={isPending} />
+                {
+                    errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>
+                }
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Input id="description" placeholder="Add a description" {...register('description')} disabled={isPending} />
+                {
+                    errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>
+                }
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="content">Content</Label>
+                <Textarea id="content" placeholder="Add your content" {...register('content')} disabled={isPending} />
+                {
+                    errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>
+                }
+            </div>
+            <Button className="w-full" type="submit" disabled={isPending}>
+                {
+                    isPending ? 'Saving Post...' :
+                        isEditing ? 'Update Post' : 'Create Post'
+                }
+            </Button>
+        </form>
+    )
 }

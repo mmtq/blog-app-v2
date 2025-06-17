@@ -17,19 +17,19 @@ export async function createPost(formData: FormData) {
 
         if (!session || !session.user) {
             return {
-                success : false,
-                message : 'You are not logged in'
+                success: false,
+                message: 'You are not logged in'
             }
         }
         // get form data
         const title = formData.get('title') as string
         const description = formData.get('description') as string
         const content = formData.get('content') as string
-        
+
         if (!title || !description || !content) {
             return {
-                success : false,
-                message : 'All fields are required'
+                success: false,
+                message: 'All fields are required'
             }
         }
 
@@ -38,13 +38,13 @@ export async function createPost(formData: FormData) {
 
         // check if the slug already exists
         const existingPost = await db.query.posts.findFirst({
-            where : eq(posts.slug, slug)
+            where: eq(posts.slug, slug)
         })
 
         if (existingPost) {
             return {
-                success : false,
-                message : 'A post with this title already exists. Please choose a different title.'
+                success: false,
+                message: 'A post with this title already exists. Please choose a different title.'
             }
         }
 
@@ -53,7 +53,7 @@ export async function createPost(formData: FormData) {
             description,
             content,
             slug,
-            authorId : session.user.id    
+            authorId: session.user.id
         }).returning()
 
         //revalidate pages
@@ -63,14 +63,80 @@ export async function createPost(formData: FormData) {
         revalidatePath('/profile')
 
         return {
-            success : true,
-            message : 'Post created successfully',
+            success: true,
+            message: 'Post created successfully',
             slug
         }
     } catch (error) {
         return {
-            success : false,
-            message : 'Failed to create post. Please try again.'
+            success: false,
+            message: 'Failed to create post. Please try again.'
+        }
+    }
+}
+
+
+export async function updatePost(postID: number, formData: FormData) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
+
+        if (!session || !session.user) {
+            return {
+                success: false,
+                message: 'You are not logged in'
+            }
+        }
+
+        const existingPost = await db.query.posts.findFirst({
+            where : eq(posts.id, postID)
+        })
+
+        if (existingPost?.authorId !== session.user.id) {
+            return {
+                success: false,
+                message: 'You are not authorized to update this post'
+            }
+        }
+
+        // get form data
+        const title = formData.get('title') as string
+        const description = formData.get('description') as string
+        const content = formData.get('content') as string
+
+        if (!title || !description || !content) {
+            return {
+                success: false,
+                message: 'All fields are required'
+            }
+        }
+
+        // update the post
+
+        const [updatedPost] = await db.update(posts).set({
+            title,
+            description,
+            content,
+            updatedAt: new Date()
+        }).where(eq(posts.id, postID)).returning()
+
+        // revalidate pages
+        revalidatePath('/')
+        revalidatePath(`/post/${existingPost.slug}`)
+        revalidatePath('/profile')
+
+        return {
+            success: true,
+            message: 'Post updated successfully',
+            slug : existingPost.slug
+        }
+
+    } catch (error) {
+        console.error(error)
+        return {
+            success: false,
+            message: 'Failed to update post. Please try again.'
         }
     }
 }

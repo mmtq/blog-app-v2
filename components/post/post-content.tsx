@@ -7,6 +7,9 @@ import { Pencil } from "lucide-react";
 import DeletePostButton from "./delete-post-button";
 
 export default function PostContent({post, isAuthor} : PostContentProps) {
+
+    const content = post.content.split('\n')
+
   return (
     <Card>
       <CardHeader>
@@ -17,7 +20,16 @@ export default function PostContent({post, isAuthor} : PostContentProps) {
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground text-lg mb-6">{post.description}</p>
-        <p className="mb-6">{post.content}</p>
+        <p className="mb-6">
+            {
+                content.map((line, index) => (
+                    <span key={index}>
+                        {line}
+                        <br />
+                    </span>
+                ))
+            }
+        </p>
       </CardContent>
       {
         isAuthor && (

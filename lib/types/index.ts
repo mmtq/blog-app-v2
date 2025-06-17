@@ -21,3 +21,14 @@ export type PostContentProps = {
 export type DeletePostProps = {
     postID: number
 }
+
+export type EditPostProps = {
+    isEditing?: boolean
+    post?: {
+        id : number,
+        title: string,
+        description: string,
+        content: string,
+        slug: string
+    }
+}
