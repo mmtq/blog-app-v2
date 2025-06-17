@@ -6,6 +6,8 @@ import { Button } from "../ui/button"
 import { useSession } from "@/lib/auth-client"
 import UserMenu from "../auth/user-menu"
 import ThemeToggle from "../theme/theme-toggle"
+import { Search } from "lucide-react"
+import SearchModal from "./search-modal"
 
 export default function Header() {
 
@@ -37,8 +39,8 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <div className="hidden md:block">
-            {/* Placeholer for search */}
+          <div>
+            <SearchModal />
           </div>
           <ThemeToggle />
           <div className="flex items-center gap-2">

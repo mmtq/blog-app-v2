@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { posts } from "@/lib/db/schema"
 import { slugify } from "@/lib/utils"
-import { eq } from "drizzle-orm"
+import { eq, ilike } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 
@@ -178,5 +178,17 @@ export async function deletePost(postID: number) {
 
     } catch (error) {
 
+    }
+}
+
+export async function searchPosts(query:string) {
+    if (!query) return []
+
+    try {
+        const response = await db.select().from(posts).where(ilike(posts.title, `%${query}%`)).limit(10)
+        return response
+    } catch (error) {
+        console.error(error)
+        return []
     }
 }
